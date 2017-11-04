@@ -10,7 +10,7 @@ var concat = require('gulp-concat');
 var sass = require('gulp-sass');
 var watch = require('gulp-watch');
 
-    // format error messages
+// Format error messages
 var notify = function(error) {
     var message = 'In: ' ;
     var title = 'Error: ';
@@ -34,3 +34,29 @@ var notify = function(error) {
 
     notifier.notify({title: title, message: message});
 };
+
+// Bundle settings
+var bundler = watchify(browserify({
+    entries: ['./src/app.jsx'],
+    transform: [reactify],
+    extensions: ['.jsx'],
+    debug: true, 
+    cache: {},
+    packageCache: {},
+    fullPaths: true
+}));
+
+//Bundle tasks
+function bundle() {
+    return bundler
+        .bundle()
+        .on('error', notify)
+        .pipe(source('main.js'))
+        .pipe(gulp.dest('./'))
+}
+bundler.on('update', bundle);
+
+//Creat bundle
+gulp.task('build', function(){
+    bundle()
+});
