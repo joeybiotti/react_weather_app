@@ -58,4 +58,60 @@ getInitialState: function() {
         humidity: 0,
         wind: 0
     }  
+};
+
+fetchData: function() {
+    if (citiesWeather[currentCity]) {
+        this.updateData();   
+    }
+    else {
+        Api.get(cities[currentCity])
+            .then(function(data) {
+                citiesWeather[currentCity] = data;
+                this.updateData();
+        }.bind(this));
+    }
+},
+
+updateData: function() {
+
+    this.setState({
+        weather: citiesWeather[currentCity].weather[0].id,
+        temp: Math.round(citiesWeather[currentCity].main.temp - 273.15), // Kelvin to Celcius
+        humidity: Math.round(citiesWeather[currentCity].main.humidity),
+        wind: Math.round(citiesWeather[currentCity].wind.speed)
+    });
+},
+
+// Called before the render method is executed
+componentWillMount: function() {
+
+    // Get the query string data
+    query = location.search.split('=')[1];
+
+    // Figure out if we need to display more than one city's weather
+    if (query !== undefined) {
+        cities = query.split(','); // Get an array of city names
+
+        // Set the interval to load new cities
+        if (cities.length > 1) {
+            setInterval((function() {
+                currentCity++;
+                if (currentCity === cities.length) {
+                    currentCity = 0;
+                }
+                this.fetchData(); // Reload the city every 5 seconds
+            }).bind(this), 5000);
+        }
+    }
+    else {
+        cities[0] = 'London'; // Set London as the default city
+    }
+
+    // Create a timer to clear the cache after 5 minutes, so we can get updated data from the API
+    setInterval(function() {
+        citiesWeather = []; // Empty the cache
+    }, (1000*60*5));
+
+    this.fetchData();
 },
