@@ -51,7 +51,7 @@ var element = React.createElement(Weather, {});
 ReactDOM.render(element, document.querySelector('.container'));
 
 //Init data for UI
-getInitialState: function() {
+function getInitialState() {
     return {
         weather: '',
         temp: 0,
@@ -60,7 +60,7 @@ getInitialState: function() {
     }  
 };
 
-fetchData: function() {
+function fetchData() {
     if (citiesWeather[currentCity]) {
         this.updateData();   
     }
@@ -71,9 +71,9 @@ fetchData: function() {
                 this.updateData();
         }.bind(this));
     }
-},
+};
 
-updateData: function() {
+function updateData() {
 
     this.setState({
         weather: citiesWeather[currentCity].weather[0].id,
@@ -81,10 +81,10 @@ updateData: function() {
         humidity: Math.round(citiesWeather[currentCity].main.humidity),
         wind: Math.round(citiesWeather[currentCity].wind.speed)
     });
-},
+};
 
 // Called before the render method is executed
-componentWillMount: function() {
+function componentWillMount() {
 
     // Get the query string data
     query = location.search.split('=')[1];
@@ -114,4 +114,4 @@ componentWillMount: function() {
     }, (1000*60*5));
 
     this.fetchData();
-},
+};
